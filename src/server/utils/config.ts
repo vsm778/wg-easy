@@ -36,6 +36,15 @@ export const WG_INITIAL_ENV = {
     : undefined,
 };
 
+export const TELEGRAM_ENV = {
+  BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+  WEBHOOK_SECRET: process.env.TELEGRAM_WEBHOOK_SECRET,
+  ALLOWED_PHONE_NUMBERS:
+    process.env.TELEGRAM_ALLOWED_PHONE_NUMBERS?.split(',')
+      .map((x) => x.trim())
+      .filter(Boolean) ?? [],
+};
+
 function assertEnv<T extends string>(env: T) {
   const val = process.env[env];
 

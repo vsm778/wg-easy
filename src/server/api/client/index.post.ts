@@ -1,4 +1,5 @@
 import { ClientCreateSchema } from '#db/repositories/client/types';
+import { createClientAndSave } from '../../services/clientProvisioning';
 
 export default definePermissionEventHandler(
   'clients',
@@ -9,10 +10,7 @@ export default definePermissionEventHandler(
       validateZod(ClientCreateSchema, event)
     );
 
-    const result = await Database.clients.create({ name, expiresAt });
-    await WireGuard.saveConfig();
-
-    const clientId = result[0]!.clientId;
+    const { clientId } = await createClientAndSave({ name, expiresAt });
     return { success: true, clientId };
   }
 );
