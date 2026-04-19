@@ -61,4 +61,14 @@ export class UserConfigService {
       .where(eq(userConfig.id, 'wg0'))
       .execute();
   }
+
+  updateDefaults(
+    data: Pick<UserConfigUpdateType, 'defaultJC' | 'defaultJMin' | 'defaultJMax'>
+  ) {
+    return this.#db
+      .update(userConfig)
+      .set(data)
+      .where(eq(userConfig.id, 'wg0'))
+      .execute();
+  }
 }

@@ -19,7 +19,7 @@ export const userConfig = sqliteTable('user_configs_table', {
     .$type<string[]>()
     .notNull(),
   defaultJC: int('default_j_c').default(7),
-  defaultJMin: int('default_j_min').default(10),
+  defaultJMin: int('default_j_min').default(64),
   defaultJMax: int('default_j_max').default(1000),
   defaultI1: text('default_i1'),
   defaultI2: text('default_i2'),

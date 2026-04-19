@@ -1,11 +1,81 @@
 import fs from 'node:fs/promises';
 import debug from 'debug';
 import type { InterfaceType } from '#db/repositories/interface/types';
+import type { UserConfigType } from '#db/repositories/userConfig/types';
+import type { ClientType } from '#db/repositories/client/types';
 
 const WG_DEBUG = debug('WireGuard');
 
-const generateRandomHeaderValue = () =>
-  Math.floor(Math.random() * 2147483642) + 5;
+const H_MIN = 0;
+const H_MAX = 4294967295;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const normalizeNullable = (
+  value: number | null,
+  min: number,
+  max: number
+) => {
+  if (value === null) {
+    return null;
+  }
+
+  return clamp(value, min, max);
+};
+
+const isHeaderRange = (value: string | null) => {
+  if (!value) {
+    return false;
+  }
+
+  return /^\d+-\d+$/.test(value);
+};
+
+const generateHeaderRanges = () => {
+  const segmentSize = Math.floor((H_MAX - H_MIN + 1) / 4);
+
+  return Array.from({ length: 4 }, (_, index) => {
+    const segmentStart = H_MIN + segmentSize * index;
+    const segmentEnd =
+      index === 3 ? H_MAX : segmentStart + segmentSize - 1;
+    const start =
+      segmentStart +
+      Math.floor(Math.random() * Math.max(1, segmentEnd - segmentStart + 1));
+    const end =
+      start + Math.floor(Math.random() * Math.max(1, segmentEnd - start + 1));
+
+    return `${start}-${end}`;
+  });
+};
+
+const generateJunkPacketRange = () => {
+  const jMin = 64 + Math.floor(Math.random() * (1024 - 64 + 1));
+  const jMax = jMin + Math.floor(Math.random() * (1024 - jMin + 1));
+
+  return { jMin, jMax };
+};
+
+const normalizeInterfaceParameters = (wgInterface: InterfaceType) => ({
+  jC: normalizeNullable(wgInterface.jC, 0, 10),
+  ...generateJunkPacketRange(),
+  s1: normalizeNullable(wgInterface.s1, 0, 64),
+  s2: normalizeNullable(wgInterface.s2, 0, 64),
+  s3: normalizeNullable(wgInterface.s3, 0, 64),
+  s4: normalizeNullable(wgInterface.s4, 0, 32),
+});
+
+const normalizeUserConfigParameters = (userConfig: UserConfigType) => ({
+  defaultJC: normalizeNullable(userConfig.defaultJC, 0, 10),
+  defaultJMin: normalizeNullable(userConfig.defaultJMin, 64, 1024),
+  defaultJMax: normalizeNullable(userConfig.defaultJMax, 64, 1024),
+});
+
+const normalizeClientParameters = (client: ClientType) => ({
+  jC: normalizeNullable(client.jC, 0, 10),
+  jMin: normalizeNullable(client.jMin, 64, 1024),
+  jMax: normalizeNullable(client.jMax, 64, 1024),
+});
 
 class WireGuard {
   /**
@@ -210,21 +280,25 @@ class WireGuard {
       WG_DEBUG('New Wireguard Keys generated successfully.');
     }
 
-    if (wgInterface.h1 === '0') {
-      WG_DEBUG('Generating random AmneziaWG obfuscation parameters...');
-      const headers = new Set<number>();
+    await this.#normalizeAmnezia20Parameters();
+    wgInterface = await Database.interfaces.get();
 
-      while (headers.size < 4) {
-        headers.add(generateRandomHeaderValue());
-      }
-      const [h1, h2, h3, h4] = Array.from(headers);
+    if (
+      !isHeaderRange(wgInterface.h1) ||
+      !isHeaderRange(wgInterface.h2) ||
+      !isHeaderRange(wgInterface.h3) ||
+      !isHeaderRange(wgInterface.h4)
+    ) {
+      WG_DEBUG('Generating random AmneziaWG 2.0 header ranges...');
+      const [h1, h2, h3, h4] = generateHeaderRanges();
 
-      wgInterface.h1 = String(h1)!;
-      wgInterface.h2 = String(h2)!;
-      wgInterface.h3 = String(h3)!;
-      wgInterface.h4 = String(h4)!;
-
-      Database.interfaces.update(wgInterface);
+      await Database.interfaces.updatePartial({
+        h1,
+        h2,
+        h3,
+        h4,
+      });
+      wgInterface = await Database.interfaces.get();
     }
 
     WG_DEBUG(`Starting Wireguard Interface ${wgInterface.name}...`);
@@ -291,6 +365,24 @@ class WireGuard {
     await wg.restart(wgInterface.name);
   }
 
+  async #normalizeAmnezia20Parameters() {
+    const wgInterface = await Database.interfaces.get();
+    await Database.interfaces.updatePartial(normalizeInterfaceParameters(wgInterface));
+
+    const userConfig = await Database.userConfigs.get();
+    await Database.userConfigs.updateDefaults(
+      normalizeUserConfigParameters(userConfig)
+    );
+
+    const clients = await Database.clients.getAll();
+    for (const client of clients) {
+      await Database.clients.updatePartial(
+        client.id,
+        normalizeClientParameters(client)
+      );
+    }
+  }
+
   async cronJob() {
     const clients = await Database.clients.getAll();
     let needsSave = false;
@@ -336,3 +428,10 @@ Please follow the instructions on https://wg-easy.github.io/wg-easy/latest/advan
 // TODO: make static or object
 
 export default new WireGuard();
+export const wireGuardTestExports = {
+  generateHeaderRanges,
+  isHeaderRange,
+  normalizeInterfaceParameters,
+  normalizeUserConfigParameters,
+  normalizeClientParameters,
+};

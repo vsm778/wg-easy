@@ -6,10 +6,16 @@ import { defineCommand, runMain } from 'citty';
 import packageJson from '../package.json';
 
 // Commands
+import dbAdminCreate from './admin/create';
 import dbAdminReset from './admin/reset';
 import clientsList from './clients/list';
 import clientsQr from './clients/qr';
-const subCommands = [dbAdminReset, clientsList, clientsQr] as const;
+const subCommands = [
+  dbAdminCreate,
+  dbAdminReset,
+  clientsList,
+  clientsQr,
+] as const;
 
 // from citty
 function resolveValue<T>(input: Resolvable<T>): T | Promise<T> {

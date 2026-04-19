@@ -12,32 +12,14 @@ export const OLD_ENV = {
   PASSWORD_HASH: process.env.PASSWORD_HASH,
 };
 
-const detectAwg = async (): Promise<'awg' | 'wg'> => {
-  /** TODO: delete on next major version */
-  if (process.env.EXPERIMENTAL_AWG === 'true') {
-    const OVERRIDE_AUTO_AWG = process.env.OVERRIDE_AUTO_AWG?.toLowerCase();
-
-    if (
-      OVERRIDE_AUTO_AWG === ('wg' as const) ||
-      OVERRIDE_AUTO_AWG === ('awg' as const)
-    ) {
-      return OVERRIDE_AUTO_AWG;
-    } else {
-      return await exec('modinfo amneziawg')
-        .then(() => 'awg' as const)
-        .catch(() => 'wg' as const);
-    }
-  } else return 'wg';
-};
-
 export const WG_ENV = {
   /** UI is hosted on HTTP instead of HTTPS */
   INSECURE: process.env.INSECURE === 'true',
   /** Port the UI is listening on */
-  PORT: assertEnv('PORT'),
+  WEB_PORT: assertEnv('WEB_PORT'),
   /** If IPv6 should be disabled */
   DISABLE_IPV6: process.env.DISABLE_IPV6 === 'true',
-  WG_EXECUTABLE: await detectAwg(),
+  WG_EXECUTABLE: 'awg' as const,
 };
 
 export const WG_INITIAL_ENV = {
@@ -49,8 +31,8 @@ export const WG_INITIAL_ENV = {
   IPV6_CIDR: process.env.INIT_IPV6_CIDR,
   ALLOWED_IPS: process.env.INIT_ALLOWED_IPS?.split(',').map((x) => x.trim()),
   HOST: process.env.INIT_HOST,
-  PORT: process.env.INIT_PORT
-    ? Number.parseInt(process.env.INIT_PORT, 10)
+  AWG_PORT: process.env.AWG_PORT
+    ? Number.parseInt(process.env.AWG_PORT, 10)
     : undefined,
 };
 

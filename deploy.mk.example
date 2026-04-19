@@ -1,0 +1,22 @@
+APP_USER := wg-easy
+IMAGE := wg-easy:local
+INSTALL_DIR := /opt/wg-easy
+
+INIT_ENABLED := true
+INIT_IPV4_CIDR := 10.8.0.0/24
+INIT_IPV6_CIDR := fdcc:ad94:bacf:61a4::cafe:0/112
+
+INSECURE := true
+WEB_PORT := 51821
+AWG_PORT := 51820
+
+WG_IPV4_SUBNET := 10.42.42.0/24
+WG_IPV4_ADDRESS := 10.42.42.42
+WG_IPV6_SUBNET := fdcc:ad94:bacf:61a3::/64
+WG_IPV6_ADDRESS := fdcc:ad94:bacf:61a3::2a
+
+WEB_PUBLISH_HOSTS := 0.0.0.0
+AWG_PUBLISH_HOSTS := 0.0.0.0
+
+ADMIN_USERNAME := admin
+ADMIN_PASSWORD := change-me-now

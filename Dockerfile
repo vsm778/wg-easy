@@ -1,4 +1,4 @@
-FROM docker.io/library/node:krypton-alpine AS build
+FROM docker.io/library/node:24-alpine3.22 AS build
 WORKDIR /app
 
 # update corepack
@@ -25,10 +25,10 @@ RUN apk add linux-headers build-base go git && \
 
 # Copy build result to a new image.
 # This saves a lot of disk space.
-FROM docker.io/library/node:krypton-alpine
+FROM docker.io/library/node:24-alpine3.22
 WORKDIR /app
 
-HEALTHCHECK --interval=1m --timeout=5s --retries=3 CMD /usr/bin/timeout 5s /bin/sh -c "/usr/bin/wg show | /bin/grep -q interface || exit 1"
+HEALTHCHECK --interval=1m --timeout=5s --retries=3 CMD /usr/bin/timeout 5s /bin/sh -c "/usr/bin/awg show | /bin/grep -q interface || exit 1"
 
 # Copy build
 COPY --from=build /app/.output /app
@@ -51,15 +51,13 @@ RUN chmod +x /usr/bin/awg /usr/bin/awg-quick
 
 # Install Linux packages
 RUN apk add --no-cache \
+    bash \
     dpkg \
     dumb-init \
     iptables \
     ip6tables \
-    nftables \
     kmod \
-    iptables-legacy \
-    wireguard-go \
-    wireguard-tools
+    iptables-legacy
 
 RUN mkdir -p /etc/amnezia
 RUN ln -s /etc/wireguard /etc/amnezia/amneziawg
@@ -70,13 +68,10 @@ RUN update-alternatives --install /usr/sbin/ip6tables ip6tables /usr/sbin/ip6tab
 
 # Set Environment
 ENV DEBUG=Server,WireGuard,Database,CMD
-ENV PORT=51821
 ENV HOST=0.0.0.0
 ENV INSECURE=false
 ENV INIT_ENABLED=false
 ENV DISABLE_IPV6=false
 
-LABEL org.opencontainers.image.source=https://github.com/wg-easy/wg-easy
-
 # Run Web UI
-CMD ["/usr/bin/dumb-init", "node", "server/index.mjs"]
+CMD ["/usr/bin/dumb-init", "sh", "-c", "PORT=\"$WEB_PORT\" node server/index.mjs"]

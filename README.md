@@ -40,6 +40,7 @@ You have found the easiest way to install & manage WireGuard on any Linux host!
 
 - [Getting Started](https://wg-easy.github.io/wg-easy/latest/getting-started/)
 - [Basic Installation](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/)
+- [Installation with Makefile](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/makefile/)
 - [Caddy](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/caddy/)
 - [Traefik](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/traefik/)
 - [Podman](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/podman-nft/)
@@ -69,7 +70,9 @@ And log in again.
 
 The easiest way to run WireGuard Easy is with Docker Compose.
 
-Just follow [these steps](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/) in the detailed documentation.
+The recommended repository-based flow is the [Makefile installation guide](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/makefile/). It covers host preparation, building the image, rendering `/opt/wg-easy/docker-compose.yml`, and starting the stack with explicit variables.
+
+If you prefer to manage a compose file manually, follow the [Basic Installation](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/) guide instead.
 
 You can also install WireGuard Easy with the [docker run command](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/docker-run/) or via [podman](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/podman-nft/).
 
@@ -91,14 +94,6 @@ Maintainer: [Buy kaaax0815 a coffee!](https://github.com/sponsors/kaaax0815) ☕
 - Node LTS & corepack enabled
 - Visual Studio Code
 
-### Dev Server
-
-This starts the development server with docker
-
-```shell
-pnpm dev
-```
-
 ### Update Auto Imports
 
 If you add something that should be auto-importable and VSCode complains, run:
@@ -107,14 +102,6 @@ If you add something that should be auto-importable and VSCode complains, run:
 cd src
 pnpm install
 cd ..
-```
-
-### Test Cli
-
-This starts the cli with docker
-
-```shell
-pnpm cli:dev
 ```
 
 ## License

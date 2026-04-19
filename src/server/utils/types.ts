@@ -28,16 +28,18 @@ export const MtuSchema = z
   .min(1024, { message: t('zod.mtu') })
   .max(9000, { message: t('zod.mtu') });
 
-export const JcSchema = z.number().min(1).max(128).nullable();
+export const JcSchema = z.number().min(0).max(10).nullable();
 
-export const JminSchema = z.number().max(1279).nullable();
+export const JminSchema = z.number().min(64).max(1024).nullable();
 
-export const JmaxSchema = z.number().max(1280).nullable();
+export const JmaxSchema = z.number().min(64).max(1024).nullable();
 
-export const SSchema = z.number().max(1132).nullable();
+export const S123Schema = z.number().min(0).max(64).nullable();
 
-const H_MIN = 5;
-const H_MAX = 2 ** 31 - 1;
+export const S4Schema = z.number().min(0).max(32).nullable();
+
+const H_MIN = 0;
+const H_MAX = 4294967295;
 
 export const HSchema = z
   .string()
@@ -54,9 +56,15 @@ export const HSchema = z
       }
 
       const [min, max] = v.split('-').map(Number);
-      return min && max && min >= H_MIN && max <= H_MAX && min <= max;
-
-      return false;
+      return (
+        min !== undefined &&
+        max !== undefined &&
+        Number.isInteger(min) &&
+        Number.isInteger(max) &&
+        min >= H_MIN &&
+        max <= H_MAX &&
+        min <= max
+      );
     },
     {
       message: t('zod.generic.validNumberRange'),

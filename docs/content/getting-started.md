@@ -4,7 +4,7 @@ hide:
     - navigation
 ---
 
-This page explains how to get started with `wg-easy`. The guide uses Docker Compose as a reference. In our examples, we mount the named volume `etc_wireguard` to `/etc/wireguard` inside the container.
+This page explains how to get started with `wg-easy`. The recommended repository workflow uses the provided `Makefile`, renders the final Docker Compose file to `/opt/wg-easy/docker-compose.yml`, and starts the stack from there.
 
 ## Preliminary Steps
 
@@ -62,9 +62,12 @@ When publishing a tag we follow the [Semantic Versioning][semver] specification.
 
 ### Follow tutorials
 
-- [Basic Installation with Docker Compose (Recommended)](./examples/tutorials/basic-installation.md)
+- [Installation with Makefile (Recommended)](./examples/tutorials/makefile.md)
+- [Basic Installation with Docker Compose](./examples/tutorials/basic-installation.md)
 - [Simple Installation with Docker Run](./examples/tutorials/docker-run.md)
 - [Advanced Installation with Podman](./examples/tutorials/podman-nft.md)
+
+The Makefile workflow is the recommended repository-based path. Use the Docker Compose tutorial only if you want to maintain the compose file manually.
 
 /// danger | Use the Correct Commands For Stopping and Starting `wg-easy`
 

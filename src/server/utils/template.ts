@@ -29,6 +29,6 @@ export function iptablesTemplate(templ: string, wgInterface: InterfaceType) {
     ipv6Cidr: wgInterface.ipv6Cidr,
     device: wgInterface.device,
     port: wgInterface.port.toString(),
-    uiPort: WG_ENV.PORT,
+    uiPort: WG_ENV.WEB_PORT,
   });
 }

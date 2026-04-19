@@ -18,22 +18,29 @@ These measures make it harder for third parties to analyze or identify your traf
 
 You must install the [AmneziaWG kernel module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module) on the host system.
 
-Experimental support for AmneziaWG can be enabled by setting the `EXPERIMENTAL_AWG` environment variable to `true`. Starting from wg-easy version 16, this setting will be enabled by default. This feature is still under development and may change in future releases.
-
-When enabled, wg-easy will automatically detect whether the AmneziaWG kernel module is available. If it is not, the system will fall back to the standard WireGuard module.
-
-To override this automatic detection, set the `OVERRIDE_AUTO_AWG` environment variable. By default, this variable is unset.
-
-Possible values:
-
-- `awg` — Force use of AmneziaWG
-- `wg` — Force use of standard WireGuard
+wg-easy uses AmneziaWG as the default and permanent WireGuard backend.
 
 ## AmneziaWG Parameters
 
-Parameter descriptions can be found in the [AmneziaWG documentation](https://docs.amnezia.org/documentation/amnezia-wg) and on the [kernel module page](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module).
+Parameter descriptions can be found in the [AmneziaWG documentation](https://docs.amnezia.org/documentation/amnezia-wg) and on the [self-hosted AmneziaWG 2.0 guide](https://docs.amnezia.org/ru/documentation/instructions/new-amneziawg-selfhosted/).
 
-All parameters except I1-I5 will be set at first startup. For information on how to set I1-I5 parameters, refer to the [AmneziaWG documentation](https://docs.amnezia.org/documentation/instructions/new-amneziawg-selfhosted/#how-to-extract-a-protocol-signature-for-amneziawg-15-manually).
+AmneziaWG 2.0 adds `S3` and `S4`, and `H1-H4` are configured as numeric ranges.
+
+According to the AmneziaWG 2.0 documentation:
+
+- `Jc` range is `0-10`
+- `Jmin` and `Jmax` range is `64-1024`
+- `S1-S3` range is `0-64`
+- `S4` range is `0-32`
+- `H1-H4` range is `0-4294967295`
+
+The official AmneziaWG 2.0 documentation also notes:
+
+- AmneziaVPN client version `4.8.12.9` or newer is required for AmneziaWG 2.0.
+- Existing AmneziaWG 1.0 configurations are treated as `Legacy`.
+- Migrating from 1.0 to 2.0 requires generating a new configuration.
+
+All parameters except I1-I5 will be set at first startup. For information on how to set I1-I5 parameters, refer to the [AmneziaWG documentation](https://docs.amnezia.org/ru/documentation/instructions/new-amneziawg-selfhosted/).
 
 If a parameter is not set, it will not be added to the configuration. If all AmneziaWG-specific parameters are absent, AmneziaWG will be fully compatible with standard WireGuard.
 

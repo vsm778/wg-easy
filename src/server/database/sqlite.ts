@@ -15,7 +15,7 @@ import { OneTimeLinkService } from './repositories/oneTimeLink/service';
 
 const DB_DEBUG = debug('Database');
 
-const client = createClient({ url: 'file:/etc/wireguard/wg-easy.db' });
+const client = createClient({ url: 'file:/db/wg-easy.db' });
 const db = drizzle({ client, schema });
 
 export async function connect() {
@@ -105,7 +105,7 @@ async function initialSetup(db: DBServiceType) {
     WG_INITIAL_ENV.USERNAME &&
     WG_INITIAL_ENV.PASSWORD &&
     WG_INITIAL_ENV.HOST &&
-    WG_INITIAL_ENV.PORT
+    WG_INITIAL_ENV.AWG_PORT
   ) {
     DB_DEBUG('Creating initial user...');
     await db.users.create(WG_INITIAL_ENV.USERNAME, WG_INITIAL_ENV.PASSWORD);
@@ -113,7 +113,7 @@ async function initialSetup(db: DBServiceType) {
     DB_DEBUG('Setting initial host and port...');
     await db.userConfigs.updateHostPort(
       WG_INITIAL_ENV.HOST,
-      WG_INITIAL_ENV.PORT
+      WG_INITIAL_ENV.AWG_PORT
     );
 
     await db.general.setSetupStep(0);

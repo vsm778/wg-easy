@@ -63,6 +63,14 @@ export class InterfaceService {
       .execute();
   }
 
+  updatePartial(data: Partial<InterfaceUpdateType>) {
+    return this.#db
+      .update(wgInterface)
+      .set(data)
+      .where(eq(wgInterface.name, 'wg0'))
+      .execute();
+  }
+
   setFirewallEnabled(firewallEnabled: boolean) {
     return this.#statements.setFirewallEnabled.execute({
       interface: 'wg0',

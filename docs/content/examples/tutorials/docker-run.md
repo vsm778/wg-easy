@@ -23,8 +23,10 @@ docker run -d \
   --name wg-easy \
   --ip6 fdcc:ad94:bacf:61a3::2a \
   --ip 10.42.42.42 \
+  -v ~/.wg-easy-db:/db \
   -v ~/.wg-easy:/etc/wireguard \
   -v /lib/modules:/lib/modules:ro \
+  --device /dev/net/tun:/dev/net/tun \
   -p 51820:51820/udp \
   -p 51821:51821/tcp \
   --cap-add NET_ADMIN \

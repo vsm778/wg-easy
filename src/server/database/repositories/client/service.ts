@@ -263,6 +263,10 @@ export class ClientService {
     });
   }
 
+  updatePartial(id: ID, data: Partial<UpdateClientType>) {
+    return this.#db.update(client).set(data).where(eq(client.id, id)).execute();
+  }
+
   async createFromExisting({
     name,
     enabled,

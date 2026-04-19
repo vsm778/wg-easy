@@ -16,9 +16,20 @@ docker compose exec -it wg-easy cli
 ```shell
 docker run --rm -it \
     -v ~/.wg-easy:/etc/wireguard \
+    -v ~/.wg-easy-db:/db \
     ghcr.io/wg-easy/wg-easy:15 \
     cli
 ```
+
+### Create Initial Admin User
+
+If you want to create the initial admin directly in the SQLite database, you can run:
+
+```shell
+docker compose exec -it wg-easy cli db:admin:create --username <admin_username> --password <admin_password>
+```
+
+This creates the initial admin user and advances the setup flow to step `3`.
 
 ### Reset Password
 
